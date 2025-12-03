@@ -1,173 +1,209 @@
-// // import express, { type Application, type Request, type Response } from "express";
-// // import dotenv from "dotenv";
+// // ===== INI MATERI DAN TUGAS =====
 
-// // dotenv.config()
-
-// // const app: Application = express();
-// // const HOST = process.env.HOST;
-// // const PORT = process.env.PORT;
-
-// // app.use(express.json())
-
-// // let products = [
-// //   { id: 1, nama: "Laptop Gaming", deskripsi: "Intel i7, RTX 3060", harga: 15000000 },
-// //   { id: 2, nama: "Keyboard Mekanikal", deskripsi: "Blue Switch, RGB", harga: 800000 },
-// //   { id: 3, nama: "Mouse Wireless", deskripsi: "Ergonomic, Silent Click", harga: 300000 }
-// // ];
-
-// // app.get('/api/products', (_req: Request, res: Response) => {
-// //   res.json({
-// //     status: true,
-// //     jumlah: products.length,
-// //     data: products
-
-// //   })
-// // });
-
-
-// // app.get('/api/products/:id', (req: Request, res: Response) => {
-// //     if (!req.params.id) {
-// //         res.json({
-// //             message: "parameter tidak di temukan"
-// //         })
-// //         return
-// //     }
-
-// //     const id = parseInt(req.params.id)
-// //     const product = products.find(p => p.id === id)
-
-// //     if (!product) {
-// //         res.json({
-// //             status: false,
-// //             message: "product tidak ditemukan"
-// //         })
-        
-// //     }
-
-// //     res.json({
-// //         status: true,
-// //         data: product
-// //     })
-// // })
-
-// // app.get('/api/search', (req: Request, res: Response) => {
-// //   const { name, max_price } = req.query;
-
-// //   let result = products;
-
-// //   if (name) {
-// //     result = result.filter(p => 
-// //       p.nama.toLowerCase().includes((name as string).toLowerCase())
-// //     );
-// //   }
-
-// //   if (max_price) {
-// //     result = result.filter(p => p.harga <= Number(max_price));
-// //   }
-
-// //   res.json({
-// //     success: true,
-// //     filtered_result: result
-// //   });
-
-// // })
-
-// // app.get('/', (_req: Request, res: Response) => {
-// //   res.json({
-// //     message: "Selamat datang di API E-Commerce!",
-// //     hari: 3,
-// //     status: "Server hidup!"
-// //   });
-// // });
-
-
-
-// // app.listen(PORT, () => {
-// //     console.log(`server running at ${HOST}:${PORT}`)
-// // })
-
-
-// import express, { type Request, type Response } from 'express';
+// import express, {type Application, type Request, type Response, type NextFunction } from 'express';
 // import dotenv from 'dotenv';
+// import morgan from 'morgan';
+// import helmet from 'helmet';
+// import cors from 'cors';
+// import { body, param, validationResult, type ValidationChain } from 'express-validator';
 
-// dotenv.config();
 
-// const app = express();
-// const PORT = process.env.PORT || 3000;
+// dotenv.config()
 
-// app.use(express.json());
+// const app: Application = express()
+// const HOST = process.env.HOST
+// const PORT = process.env.PORT
 
-// // Data produk
-// let products = [
+// app.use(express.json())
+// app.use(helmet());
+// app.use(cors()); 
+// app.use(morgan('dev'));
+
+// interface CustomRequest extends Request {
+//   startTime?: number;
+// }
+
+// interface Product {
+//   id: number;
+//   nama: string;
+//   deskripsi: string;
+//   harga: number;
+// }
+
+
+// let products: Product[] = [
 //   { id: 1, nama: "Laptop Gaming", deskripsi: "Intel i7, RTX 3060", harga: 15000000 },
 //   { id: 2, nama: "Keyboard Mekanikal", deskripsi: "Blue Switch, RGB", harga: 800000 },
 //   { id: 3, nama: "Mouse Wireless", deskripsi: "Ergonomic, Silent Click", harga: 300000 }
 // ];
 
-// // Data untuk endpoint baru
-// let categories = [
-//   { id: 1, nama: "Elektronik", deskripsi: "Produk elektronik" },
-//   { id: 2, nama: "Aksesori", deskripsi: "Aksesori komputer" },
-//   { id: 3, nama: "Gaming", deskripsi: "Perangkat gaming" }
-// ];
-
-// let orders = [
-//   { id: 1, product_id: 1, quantity: 1, total: 15000000, status: "completed" },
-//   { id: 2, product_id: 2, quantity: 2, total: 1600000, status: "pending" }
-// ];
-
-// let users = [
-//   { id: 1, username: "user1", email: "user1@example.com", saldo: 1000000 },
-//   { id: 2, username: "user2", email: "user2@example.com", saldo: 2000000 }
-// ];
-
-// let reviews = [
-//   { id: 1, product_id: 1, user_id: 1, rating: 5, comment: "Bagus!" },
-//   { id: 2, product_id: 2, user_id: 2, rating: 4, comment: "Cukup baik" }
-// ];
-
-// let promotions = [
-//   { id: 1, name: "Diskon Akhir Tahun", discount: 20, valid_until: "2024-12-31" },
-//   { id: 2, name: "Flash Sale", discount: 50, valid_until: "2024-01-31" }
-// ];
-
-// // 1. ROUTE GET – Home
-// app.get('/', (_req: Request, res: Response) => {
-//   res.json({
-//     message: "Selamat datang di API E-Commerce!",
-//     hari: 3,
-//     status: "Server hidup!"
-//   });
+// app.use((req: CustomRequest, _res: Response, next: NextFunction) => {
+//   console.log(`Request masuk: ${req.method} ${req.path}`);
+//   req.startTime = Date.now();
+//   next();
 // });
 
-// // 2. ROUTE GET – Tampilkan semua produk
-// app.get('/api/products', (_req: Request, res: Response) => {
-//   res.json({
-//     success: true,
-//     jumlah: products.length,
-//     data: products
-//   });
-// });
-
-// // 3. ROUTE GET – Cari berdasarkan ID (Route Params)
-// app.get('/api/products/:id', (req: Request, res: Response) => {
-//   const id = parseInt(req.params.id!);
-//   const product = products.find(p => p.id === id);
-
-//   if (!product) {
-//     return res.status(404).json({
+// app.use((req: Request, res: Response, next: NextFunction) => {
+//   const apiKey = req.headers['x-api-key'];
+//   if (!apiKey) {
+//     return res.status(401).json({
 //       success: false,
-//       message: "Produk tidak ditemukan"
+//       message: "Header X-API-Key wajib diisi untuk akses API!"
 //     });
 //   }
-
-//   res.json({
-//     success: true,
-//     data: product
-//   });
+//   // Simulasi validasi API key (dalam produksi, cek ke database)
+//   if (apiKey !== 'secret-api-key-123') {
+//     return res.status(403).json({
+//       success: false,
+//       message: "API Key tidak valid!"
+//     });
+//   }
+//   next();
 // });
 
-// // 4. ROUTE GET – Filter dengan Query String
+// interface ApiResponse {
+//   success: boolean;
+//   message: string;
+//   data?: unknown;
+//   pagination?: {
+//     page: number;
+//     limit: number;
+//     total: number;
+//   };
+//   errors?: Array<{
+//     field: string;
+//     message: string;
+//   }> | { stack?: string };
+// }
+
+// // Success Response Helper
+// const successResponse = (
+//   res: Response,
+//   message: string,
+//   data: unknown = null,
+//   pagination: { page: number; limit: number; total: number } | null = null,
+//   statusCode: number = 200
+// ) => {
+//   const response: ApiResponse = {
+//     success: true,
+//     message,
+//   };
+
+//   if (data !== null) response.data = data;
+//   if (pagination) response.pagination = pagination;
+
+//   return res.status(statusCode).json(response);
+// };
+
+// // Error Response Helper
+// const errorResponse = (
+//   res: Response,
+//   message: string,
+//   statusCode: number = 400,
+//   errors: Array<{ field: string; message: string }> | { stack?: string } | null = null
+// ) => {
+//   const response: ApiResponse = {
+//     success: false,
+//     message,
+//   };
+
+//   if (errors) response.errors = errors;
+
+//   return res.status(statusCode).json(response);
+// };
+
+
+// const validate = (validations: ValidationChain[]) => {
+//   return async (req: Request, res: Response, next: NextFunction) => {
+//     await Promise.all(validations.map(validation => validation.run(req)));
+
+//     const errors = validationResult(req);
+//     if (errors.isEmpty()) {
+//       return next();
+//     }
+
+//     const errorList = errors.array().map(err => ({
+//       field: err.type === 'field' ? err.path : 'unknown',
+//       message: err.msg
+//     }));
+
+//     return errorResponse(res, 'Validasi gagal', 400, errorList);
+//   };
+// };
+
+// // Validasi untuk CREATE & UPDATE produk
+// const createProductValidation = [
+//   body('nama')
+//     .trim()
+//     .notEmpty().withMessage('Nama produk wajib diisi')
+//     .isLength({ min: 3 }).withMessage('Nama produk minimal 3 karakter'),
+  
+//   body('deskripsi')
+//     .trim()
+//     .notEmpty().withMessage('Deskripsi wajib diisi'),
+  
+//   body('harga')
+//     .isNumeric().withMessage('Harga harus angka')
+//     .custom(value => value > 0).withMessage('Harga harus lebih dari 0')
+// ];
+
+// // Validasi untuk GET by ID produk
+// const getProductByIdValidation = [
+//   param('id')
+//     .isNumeric().withMessage('ID harus angka')
+// ];
+
+// // ==================== ROUTES (sama seperti Hari 2 + tambahan validasi) ====================
+
+// app.get('/', (req: CustomRequest, res: Response) => {
+//   const waktuProses = Date.now() - (req.startTime || Date.now());
+//   successResponse(res, 'API E-Commerce – Hari 4', {
+//     hari: 4,
+//     status: "Server hidup!",
+//     waktuProses: `${waktuProses}ms`
+//   }, null, 200);
+// });
+
+// // Route 1
+// app.get('/', (_req: Request, res: Response) => {
+//     successResponse(res, 'API E-Commerce – Hari 4', {
+//     hari: 4,
+//     status: "Server hidup!"
+//   }, null, 200);
+// })
+
+// // Route 2
+// app.get('/api/products', (_req: Request, res: Response) => {  // /api/products ngecek produk
+//     res.json({
+//         status: true,
+//         jumlah: products.length,
+//         data: products
+//     })
+// })
+
+// // Route 3
+// app.get('/api/products/:id', validate(getProductByIdValidation), (req: Request, res: Response) => {
+//     if(!req.params.id) {
+//         errorResponse(res, "ID produk tidak diberikan", 400);
+//         return;
+//     }
+//     const id = parseInt(req.params.id)
+//     const product = products.find(p => p.id === id)
+
+//     if(!product) {
+//         res.json({
+//             status: false,
+//             message: "Menu gak ditemukan"
+//         })
+//     }
+
+//     res.json({
+//         status: true,
+//         data: product
+//     })
+// })
+
+// // Route 4
 // app.get('/api/search', (req: Request, res: Response) => {
 //   const { name, max_price } = req.query;
 
@@ -189,573 +225,524 @@
 //   });
 // });
 
-// // 5. ROUTE POST – Tambah produk baru
-// app.post('/api/products', (req: Request, res: Response) => {
+// // Route 5
+// app.post('/api/products', validate(createProductValidation), (req: Request, res: Response) => {
 //   const { nama, deskripsi, harga } = req.body;
+
+//     //Opsi 1
+//     if(harga !== typeof 'number') {
+//         errorResponse(res, 'Harga harus angka', 400);
+//     }
+
+//     //Opsi 2
+// //   let number
+// //   if(typeof harga === 'string') {
+// //     number = parseInt(harga) 
+// //   }
 
 //   const newProduct = {
 //     id: products.length + 1,
 //     nama,
 //     deskripsi,
-//     harga: Number(harga)
+//     harga
 //   };
 
 //   products.push(newProduct);
 
-//   res.status(201).json({
-//     success: true,
-//     message: "Produk berhasil ditambahkan",
-//     data: newProduct
-//   });
+//   successResponse(res, "Menu berhasil ditambahkan", newProduct);
 // });
 
-// // 6. ROUTE PUT – Update produk
+// // Route 6
 // app.put('/api/products/:id', (req: Request, res: Response) => {
-//   const id = parseInt(req.params.id!);
+
+//      if (!req.params.id) {
+//     errorResponse(res, "ID produk tidak diberikan", 400);
+//     return;
+//   }
+
+//   const id = parseInt(req.params.id);
 //   const index = products.findIndex(p => p.id === id);
 
 //   if (index === -1) {
-//     return res.status(404).json({ success: false, message: "Produk tidak ada" });
+//     return res.status(404).json({ success: false, message: "Menu tidak tersedia" });
 //   }
 
 //   products[index] = { ...products[index], ...req.body };
 
 //   res.json({
 //     success: true,
-//     message: "Produk berhasil diupdate",
+//     message: "Menu berhasil diperbarui",
 //     data: products[index]
 //   });
 // });
 
-// // 7. ROUTE DELETE – Hapus produk
+// // Route 7
 // app.delete('/api/products/:id', (req: Request, res: Response) => {
-//   const id = parseInt(req.params.id!);
+
+//     if (!req.params.id) {
+//     return res.status(400).json({
+//       success: false,
+//       message: "ID produk tidak diberikan"
+//     });
+//   }
+
+//   const id = parseInt(req.params.id);
 //   const index = products.findIndex(p => p.id === id);
 
 //   if (index === -1) {
-//     return res.status(404).json({ success: false, message: "Produk tidak ada" });
+//     return res.status(404).json({ success: false, message: " Menu tidak tersedia" });
 //   }
 
 //   const deleted = products.splice(index, 1);
 
 //   res.json({
 //     success: true,
-//     message: "Produk berhasil dihapus",
+//     message: "Menu sudah Dihapus",
 //     data: deleted[0]
 //   });
 // });
 
-// // 8. ROUTE GET – Tampilkan semua kategori
-// app.get('/api/categories', (_req: Request, res: Response) => {
-//   res.json({
-//     success: true,
-//     jumlah: categories.length,
-//     data: categories
-//   });
-// });
-
-// // 9. ROUTE GET – Cari kategori berdasarkan ID (Route Params)
-// app.get('/api/categories/:id', (req: Request, res: Response) => {
-//   const id = parseInt(req.params.id!);
-//   const category = categories.find(c => c.id === id);
-
-//   if (!category) {
-//     return res.status(404).json({
-//       success: false,
-//       message: "Kategori tidak ditemukan"
-//     });
-//   }
-
-//   res.json({
-//     success: true,
-//     data: category
-//   });
-// });
-
-// // 10. ROUTE POST – Tambah kategori baru
-// app.post('/api/categories', (req: Request, res: Response) => {
-//   const { nama, deskripsi } = req.body;
-
-//   const newCategory = {
-//     id: categories.length + 1,
-//     nama,
-//     deskripsi
+// const asyncHandler = (fn: Function) => {
+//   return (req: Request, res: Response, next: NextFunction) => {
+//     // Promise.resolve digunakan untuk memastikan fungsi fn yang dijalankan selalu mengembalikan Promise.
+//     // Ini penting agar .catch(next) dapat menangkap error yang terjadi, baik dari fungsi async
+//     // maupun fungsi synchronous yang melempar error. Tanpa asyncHandler, setiap fungsi controller
+//     // yang bersifat async dan berpotensi melempar error perlu dibungkus dengan try-catch manual.
+//     Promise.resolve(fn(req, res, next)).catch(next);
 //   };
+// };
 
-//   categories.push(newCategory);
+// // Contoh route async (nanti dipakai pas Sequelize)
+// app.get('/api/test-async', asyncHandler(async (_req: Request, res: Response) => {
+//   await new Promise(resolve => setTimeout(resolve, 100));
+//   successResponse(res, "Async berhasil!");
+// }));
 
-//   res.status(201).json({
-//     success: true,
-//     message: "Kategori berhasil ditambahkan",
-//     data: newCategory
-//   });
+// // 404 Handler: Middleware ini harus diletakkan PALING AKHIR di antara semua route dan middleware lainnya.
+// //              Ini karena Express akan memproses request secara berurutan. Jika suatu request 
+// //              tidak cocok dengan route atau middleware sebelumnya, maka request tersebut 
+// //              akan mencapai handler ini, yang berarti route yang diakses tidak ditemukan.
+// app.use(/.*/, (req: Request, _res: Response) => {
+//   throw new Error(`Route ${req.originalUrl} tidak ada di API E-Commerce`);
 // });
 
-// // 11. ROUTE PUT – Update kategori
-// app.put('/api/categories/:id', (req: Request, res: Response) => {
-//   const id = parseInt(req.params.id!);
-//   const index = categories.findIndex(c => c.id === id);
+// // Global Error Handler – INI YANG PALING PENTING HARI INI
+// // Middleware ini memiliki empat parameter (err, req, res, next), yang menandakan bahwa ini adalah error handling middleware.
+// // Express akan secara otomatis memanggil middleware ini ketika ada error yang terjadi
+// // di salah satu route atau middleware sebelumnya (misalnya, dari throw new Error() atau Promise yang di-reject).
+// // Ini adalah tempat sentral untuk mengelola semua error, mencegah server crash, 
+// // dan mengirimkan respons error yang konsisten kepada klien.
+// app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
+//   console.error('ERROR:', err.message);
 
-//   if (index === -1) {
-//     return res.status(404).json({ success: false, message: "Kategori tidak ada" });
-//   }
-
-//   categories[index] = { ...categories[index], ...req.body };
-
-//   res.json({
-//     success: true,
-//     message: "Kategori berhasil diupdate",
-//     data: categories[index]
-//   });
-// });
-
-// // 12. ROUTE DELETE – Hapus kategori
-// app.delete('/api/categories/:id', (req: Request, res: Response) => {
-//   const id = parseInt(req.params.id!);
-//   const index = categories.findIndex(c => c.id === id);
-
-//   if (index === -1) {
-//     return res.status(404).json({ success: false, message: "Kategori tidak ada" });
-//   }
-
-//   const deleted = categories.splice(index, 1);
-
-//   res.json({
-//     success: true,
-//     message: "Kategori berhasil dihapus",
-//     data: deleted[0]
-//   });
-// });
-
-// // 13. ROUTE GET – Tampilkan semua pesanan
-// app.get('/api/orders', (_req: Request, res: Response) => {
-//   res.json({
-//     success: true,
-//     jumlah: orders.length,
-//     data: orders
-//   });
-// });
-
-// // 14. ROUTE GET – Cari pesanan berdasarkan ID (Route Params)
-// app.get('/api/orders/:id', (req: Request, res: Response) => {
-//   const id = parseInt(req.params.id!);
-//   const order = orders.find(o => o.id === id);
-
-//   if (!order) {
-//     return res.status(404).json({
-//       success: false,
-//       message: "Pesanan tidak ditemukan"
-//     });
-//   }
-
-//   res.json({
-//     success: true,
-//     data: order
-//   });
-// });
-
-// // 15. ROUTE POST – Tambah pesanan baru
-// app.post('/api/orders', (req: Request, res: Response) => {
-//   const { product_id, quantity, total, status } = req.body;
-
-//   const newOrder = {
-//     id: orders.length + 1,
-//     product_id: Number(product_id),
-//     quantity: Number(quantity),
-//     total: Number(total),
-//     status: status || "pending"
-//   };
-
-//   orders.push(newOrder);
-
-//   res.status(201).json({
-//     success: true,
-//     message: "Pesanan berhasil ditambahkan",
-//     data: newOrder
-//   });
-// });
-
-// // 16. ROUTE PUT – Update pesanan
-// app.put('/api/orders/:id', (req: Request, res: Response) => {
-//   const id = parseInt(req.params.id!);
-//   const index = orders.findIndex(o => o.id === id);
-
-//   if (index === -1) {
-//     return res.status(404).json({ success: false, message: "Pesanan tidak ada" });
-//   }
-
-//   orders[index] = { ...orders[index], ...req.body };
-
-//   res.json({
-//     success: true,
-//     message: "Pesanan berhasil diupdate",
-//     data: orders[index]
-//   });
-// });
-
-// // 17. ROUTE GET – Tampilkan semua pengguna
-// app.get('/api/users', (_req: Request, res: Response) => {
-//   res.json({
-//     success: true,
-//     jumlah: users.length,
-//     data: users
-//   });
-// });
-
-// // 18. ROUTE GET – Cari pengguna berdasarkan ID (Route Params)
-// app.get('/api/users/:id', (req: Request, res: Response) => {
-//   const id = parseInt(req.params.id!);
-//   const user = users.find(u => u.id === id);
-
-//   if (!user) {
-//     return res.status(404).json({
-//       success: false,
-//       message: "Pengguna tidak ditemukan"
-//     });
-//   }
-
-//   res.json({
-//     success: true,
-//     data: user
-//   });
-// });
-
-// // 19. ROUTE POST – Tambah pengguna baru
-// app.post('/api/users', (req: Request, res: Response) => {
-//   const { username, email, saldo } = req.body;
-
-//   const newUser = {
-//     id: users.length + 1,
-//     username,
-//     email,
-//     saldo: Number(saldo) || 0
-//   };
-
-//   users.push(newUser);
-
-//   res.status(201).json({
-//     success: true,
-//     message: "Pengguna berhasil ditambahkan",
-//     data: newUser
-//   });
-// });
-
-// // 20. ROUTE GET – Tampilkan semua ulasan
-// app.get('/api/reviews', (_req: Request, res: Response) => {
-//   res.json({
-//     success: true,
-//     jumlah: reviews.length,
-//     data: reviews
-//   });
-// });
-
-// // 21. ROUTE GET – Cari ulasan berdasarkan ID (Route Params)
-// app.get('/api/reviews/:id', (req: Request, res: Response) => {
-//   const id = parseInt(req.params.id!);
-//   const review = reviews.find(r => r.id === id);
-
-//   if (!review) {
-//     return res.status(404).json({
-//       success: false,
-//       message: "Ulasan tidak ditemukan"
-//     });
-//   }
-
-//   res.json({
-//     success: true,
-//     data: review
-//   });
-// });
-
-// // 22. ROUTE POST – Tambah ulasan baru
-// app.post('/api/reviews', (req: Request, res: Response) => {
-//   const { product_id, user_id, rating, comment } = req.body;
-
-//   const newReview = {
-//     id: reviews.length + 1,
-//     product_id: Number(product_id),
-//     user_id: Number(user_id),
-//     rating: Number(rating),
-//     comment
-//   };
-
-//   reviews.push(newReview);
-
-//   res.status(201).json({
-//     success: true,
-//     message: "Ulasan berhasil ditambahkan",
-//     data: newReview
-//   });
-// });
-
-// // 23. ROUTE GET – Filter produk berdasarkan harga range
-// app.get('/api/products/filter/price', (req: Request, res: Response) => {
-//   const { min_price, max_price } = req.query;
-
-//   let result = products;
-
-//   if (min_price) {
-//     result = result.filter(p => p.harga >= Number(min_price));
-//   }
-
-//   if (max_price) {
-//     result = result.filter(p => p.harga <= Number(max_price));
-//   }
-
-//   res.json({
-//     success: true,
-//     filtered_result: result
-//   });
-// });
-
-// // 24. ROUTE GET – Tampilkan semua promosi
-// app.get('/api/promotions', (_req: Request, res: Response) => {
-//   res.json({
-//     success: true,
-//     jumlah: promotions.length,
-//     data: promotions
-//   });
-// });
-
-// // 25. ROUTE GET – Cari promosi berdasarkan ID (Route Params)
-// app.get('/api/promotions/:id', (req: Request, res: Response) => {
-//   const id = parseInt(req.params.id!);
-//   const promotion = promotions.find(p => p.id === id);
-
-//   if (!promotion) {
-//     return res.status(404).json({
-//       success: false,
-//       message: "Promosi tidak ditemukan"
-//     });
-//   }
-
-//   res.json({
-//     success: true,
-//     data: promotion
-//   });
-// });
-
-// // 26. ROUTE POST – Tambah promosi baru
-// app.post('/api/promotions', (req: Request, res: Response) => {
-//   const { name, discount, valid_until } = req.body;
-
-//   const newPromotion = {
-//     id: promotions.length + 1,
-//     name,
-//     discount: Number(discount),
-//     valid_until
-//   };
-
-//   promotions.push(newPromotion);
-
-//   res.status(201).json({
-//     success: true,
-//     message: "Promosi berhasil ditambahkan",
-//     data: newPromotion
-//   });
-// });
-
-// // 27. ROUTE DELETE – Hapus promosi
-// app.delete('/api/promotions/:id', (req: Request, res: Response) => {
-//   const id = parseInt(req.params.id!);
-//   const index = promotions.findIndex(p => p.id === id);
-
-//   if (index === -1) {
-//     return res.status(404).json({ success: false, message: "Promosi tidak ada" });
-//   }
-
-//   const deleted = promotions.splice(index, 1);
-
-//   res.json({
-//     success: true,
-//     message: "Promosi berhasil dihapus",
-//     data: deleted[0]
-//   });
-// });
-
-// // Middleware untuk 404
-// app.use((_req: Request, res: Response) => {
-//   res.status(404).json({
-//     success: false,
-//     message: "Endpoint tidak ditemukan"
-//   });
+//   // Kalau error validasi dari express-validator sudah ditangani di validate middleware.
+//   // Ini untuk error umum lain atau error yang kita throw manual.
+//   const statusCode = err.message.includes('tidak ditemukan') ? 404 : 400;
+//  errorResponse(
+//         res,
+//         err.message || 'Terjadi kesalahan server',
+//         statusCode,
+//         process.env.NODE_ENV === 'development' ? { stack: err.stack } as { stack?: string } : null
+//     );
 // });
 
 // app.listen(PORT, () => {
-//   console.log(`Server jalan → http://localhost:${PORT}`);
-//   console.log(`Total endpoints: 27 endpoint`);
-//   console.log(`Coba buka semua route di atas pakai Postman!`);
-// });
+//     console.log(`Server running at ${HOST}:${PORT}`);
+// })
 
-// ===== INI MATERI =====
+// ===== INI MATERI DAN TUGAS =====
 
-import express, { type Application, type Request, type Response } from 'express';
+import express, {type Application, type Request, type Response, type NextFunction } from 'express';
 import dotenv from 'dotenv';
+import morgan from 'morgan';
+import helmet from 'helmet';
+import cors from 'cors';
+import { body, param, validationResult, type ValidationChain } from 'express-validator';
 
 dotenv.config()
 
 const app: Application = express()
-const HOST = process.env.HOST
-const PORT = process.env.PORT
+const HOST = process.env.HOST || 'http://localhost'
+const PORT = process.env.PORT || 3000
 
+// ===== MIDDLEWARE =====
 app.use(express.json())
+app.use(helmet())
+app.use(cors())
+app.use(morgan('dev'))
 
-let products = [
+interface CustomRequest extends Request {
+  startTime?: number;
+}
+
+interface Product {
+  id: number;
+  nama: string;
+  deskripsi: string;
+  harga: number;
+}
+
+let products: Product[] = [
   { id: 1, nama: "Laptop Gaming", deskripsi: "Intel i7, RTX 3060", harga: 15000000 },
   { id: 2, nama: "Keyboard Mekanikal", deskripsi: "Blue Switch, RGB", harga: 800000 },
   { id: 3, nama: "Mouse Wireless", deskripsi: "Ergonomic, Silent Click", harga: 300000 }
-];
+]
 
-// Route 1
-app.get('/', (_req: Request, res: Response) => {
-    res.json({
-        message: "Selamat datang di API E-Commerce!",
-        hari: 3, 
-        status: "Server hidup!"
-    })
+// ===== CUSTOM MIDDLEWARE 1: Hitung Waktu Request =====
+app.use((req: CustomRequest, _res: Response, next: NextFunction) => {
+  console.log(`Request masuk: ${req.method} ${req.path}`)
+  req.startTime = Date.now()
+  next()
 })
 
-// Route 2
-app.get('/api/products', (_req: Request, res: Response) => {  // /api/products ngecek produk
-    res.json({
-        status: true,
-        jumlah: products.length,
-        data: products
-    })
+// ===== CUSTOM MIDDLEWARE 2: Validasi API Key =====
+app.use((req: Request, _res: Response, next: NextFunction) => {
+  const apiKey = req.headers['x-api-key']
+  if (!apiKey) {
+    throw new Error("Header X-API-Key wajib diisi untuk akses API!")
+  }
+  
+  if (apiKey !== 'secret-api-key-123') {
+    throw new Error("API Key tidak valid!")
+  }
+  
+  next()
 })
 
-// Route 3
-app.get('/api/products/:id', (req: Request, res: Response) => {
-    if(!req.params.id) {
-        res.json({
-            message: "Parameter Gak ada"
-        })
-        return
+// ===== TIPE DATA UNTUK ERRORS =====
+interface ValidationError {
+  field: string;
+  message: string;
+}
+
+interface ApiResponse {
+  success: boolean;
+  message: string;
+  data?: unknown;
+  waktuProses?: number;
+  pagination?: {
+    page: number;
+    limit: number;
+    total: number;
+  };
+  errors?: ValidationError[] | { stack?: string } | null;
+}
+
+// ===== HELPER FUNCTIONS =====
+const successResponse = (
+  res: Response,
+  message: string,
+  data: unknown = null,
+  waktuProses?: number,
+  pagination: { page: number; limit: number; total: number } | null = null,
+  statusCode: number = 200
+) => {
+  const response: ApiResponse = {
+    success: true,
+    message,
+  }
+
+  if (data !== null) response.data = data
+  if (waktuProses !== undefined) response.waktuProses = waktuProses
+  if (pagination) response.pagination = pagination
+
+  return res.status(statusCode).json(response)
+}
+
+const errorResponse = (
+  res: Response,
+  message: string,
+  statusCode: number = 400,
+  waktuProses?: number,
+  errors: ValidationError[] | { stack?: string } | null = null
+) => {
+  const response: ApiResponse = {
+    success: false,
+    message,
+  }
+
+  if (waktuProses !== undefined) response.waktuProses = waktuProses
+  if (errors) response.errors = errors
+
+  return res.status(statusCode).json(response)
+}
+
+// ===== ASYNC HANDLER =====
+const asyncHandler = (fn: Function) => {
+  return (req: Request, res: Response, next: NextFunction) => {
+    Promise.resolve(fn(req, res, next)).catch(next)
+  }
+}
+
+// ===== VALIDATION MIDDLEWARE =====
+const validate = (validations: ValidationChain[]) => {
+  return async (req: Request, _res: Response, next: NextFunction) => {
+    await Promise.all(validations.map(validation => validation.run(req)))
+
+    const errors = validationResult(req)
+    if (errors.isEmpty()) {
+      return next()
     }
-    const id = parseInt(req.params.id)
-    const product = products.find(p => p.id === id)
 
-    if(!product) {
-        res.json({
-            status: false,
-            message: "Menu gak ditemukan"
-        })
-    }
+    const errorList: ValidationError[] = errors.array().map(err => ({
+      field: err.type === 'field' ? err.path : 'unknown',
+      message: err.msg
+    }))
 
-    res.json({
-        status: true,
-        data: product
-    })
+    throw new Error("Validasi gagal: " + JSON.stringify(errorList))
+  }
+}
+
+// ===== VALIDATION RULES =====
+const createProductValidation = [
+  body('nama')
+    .trim()
+    .notEmpty().withMessage('Nama produk wajib diisi')
+    .isLength({ min: 3 }).withMessage('Nama produk minimal 3 karakter'),
+  
+  body('deskripsi')
+    .trim()
+    .notEmpty().withMessage('Deskripsi wajib diisi'),
+  
+  body('harga')
+    .isNumeric().withMessage('Harga harus angka')
+    .custom(value => value > 0).withMessage('Harga harus lebih dari 0')
+]
+
+const getProductByIdValidation = [
+  param('id')
+    .isNumeric().withMessage('ID harus angka')
+]
+
+const updateProductValidation = [
+  param('id').isNumeric().withMessage('ID harus angka'),
+  body('nama')
+    .optional()
+    .trim()
+    .isLength({ min: 3 }).withMessage('Nama produk minimal 3 karakter'),
+  body('deskripsi')
+    .optional()
+    .trim()
+    .notEmpty().withMessage('Deskripsi tidak boleh kosong'),
+  body('harga')
+    .optional()
+    .isNumeric().withMessage('Harga harus angka')
+    .custom(value => value > 0).withMessage('Harga harus lebih dari 0')
+]
+
+const deleteProductValidation = [
+  param('id').isNumeric().withMessage('ID harus angka')
+]
+
+// ===== ROUTES =====
+
+// Route 1: Home dengan waktu proses
+app.get('/', (req: CustomRequest, res: Response) => {
+  const waktuProses = Date.now() - (req.startTime || Date.now())
+  successResponse(res, 'API E-Commerce – Hari 4', {
+    hari: 4,
+    status: "Server hidup!",
+    fitur: [
+      "Morgan logging",
+      "Helmet security",
+      "CORS enabled",
+      "API Key authentication",
+      "Request timing",
+      "Global error handling",
+      "Express validation",
+      "Async handler"
+    ]
+  }, waktuProses, null, 200)
 })
 
-// Route 4
-app.get('/api/search', (req: Request, res: Response) => {
-  const { name, max_price } = req.query;
+// Route 2: Get all products
+app.get('/api/products', (req: CustomRequest, res: Response) => {
+  const waktuProses = Date.now() - (req.startTime || Date.now())
+  successResponse(res, 'Berhasil mendapatkan semua produk', products, waktuProses)
+})
 
-  let result = products;
+// Route 3: Get product by ID dengan validasi
+app.get('/api/products/:id', validate(getProductByIdValidation), (req: CustomRequest, res: Response) => {
+  const id = parseInt(req.params.id!)
+  const product = products.find(p => p.id === id)
+  
+  if (!product) {
+    throw new Error(`Produk dengan ID ${id} tidak ditemukan`)
+  }
+  
+  const waktuProses = Date.now() - (req.startTime || Date.now())
+  successResponse(res, 'Berhasil mendapatkan produk', product, waktuProses)
+})
+
+// Route 4: Search products
+app.get('/api/search', (req: CustomRequest, res: Response) => {
+  const { name, max_price } = req.query
+  const waktuProses = Date.now() - (req.startTime || Date.now())
+
+  let result = products
 
   if (name) {
     result = result.filter(p => 
       p.nama.toLowerCase().includes((name as string).toLowerCase())
-    );
+    )
   }
 
   if (max_price) {
-    result = result.filter(p => p.harga <= Number(max_price));
+    const maxPriceNum = Number(max_price)
+    if (isNaN(maxPriceNum)) {
+      throw new Error('Parameter max_price harus angka')
+    }
+    result = result.filter(p => p.harga <= maxPriceNum)
   }
 
-  res.json({
-    success: true,
-    filtered_result: result
-  });
-});
+  // Gunakan successResponse helper
+  successResponse(res, 'Hasil pencarian produk', result, waktuProses)
+})
 
-// Route 5
-app.post('/api/products', (req: Request, res: Response) => {
-  const { nama, deskripsi, harga } = req.body;
-
-    //Opsi 1
-    if(harga !== typeof 'number') {
-        res.json({
-            status: false,
-            message: "Harga harus berupa angka bukan string"
-        })
-    }
-
-    //Opsi 2
-//   let number
-//   if(typeof harga === 'string') {
-//     number = parseInt(harga) 
-//   }
-
-  const newProduct = {
-    id: products.length + 1,
+// Route 5: Create product dengan validasi
+app.post('/api/products', validate(createProductValidation), (req: CustomRequest, res: Response) => {
+  const { nama, deskripsi, harga } = req.body
+  
+  const newProduct: Product = {
+    id: products.length > 0 ? Math.max(...products.map(p => p.id)) + 1 : 1,
     nama,
     deskripsi,
-    harga
-  };
-
-  products.push(newProduct);
-
-  res.status(201).json({
-    success: true,
-    message: "Menu Baru ditambahkan",
-    data: products
-  });
-});
-
-// Route 6
-app.put('/api/products/:id', (req: Request, res: Response) => {
-
-     if (!req.params.id) {
-    return res.status(400).json({
-      success: false,
-      message: "ID Menu tidak diberikan"
-    });
+    harga: Number(harga)
   }
 
-  const id = parseInt(req.params.id);
-  const index = products.findIndex(p => p.id === id);
+  products.push(newProduct)
+  const waktuProses = Date.now() - (req.startTime || Date.now())
+  successResponse(res, "Produk berhasil ditambahkan", newProduct, waktuProses, null, 201)
+})
+
+// Route 6: Update product dengan validasi
+app.put('/api/products/:id', validate(updateProductValidation), (req: CustomRequest, res: Response) => {
+  const id = parseInt(req.params.id!)
+  const index = products.findIndex(p => p.id === id)
 
   if (index === -1) {
-    return res.status(404).json({ success: false, message: "Menu tidak tersedia" });
+    throw new Error(`Produk dengan ID ${id} tidak ditemukan`)
   }
 
-  products[index] = { ...products[index], ...req.body };
-
-  res.json({
-    success: true,
-    message: "Menu berhasil diperbarui",
-    data: products[index]
-  });
-});
-
-// Route 7
-app.delete('/api/products/:id', (req: Request, res: Response) => {
-
-    if (!req.params.id) {
-    return res.status(400).json({
-      success: false,
-      message: "ID produk tidak diberikan"
-    });
+  const updatedProduct = { ...products[index], ...req.body }
+  
+  // Validasi harga jika diupdate
+  if (req.body.harga !== undefined) {
+    if (typeof req.body.harga !== 'number' || req.body.harga <= 0) {
+      throw new Error('Harga harus angka dan lebih dari 0')
+    }
+    updatedProduct.harga = req.body.harga
   }
 
-  const id = parseInt(req.params.id);
-  const index = products.findIndex(p => p.id === id);
+  products[index] = updatedProduct
+  const waktuProses = Date.now() - (req.startTime || Date.now())
+  
+  successResponse(res, "Produk berhasil diperbarui", updatedProduct, waktuProses)
+})
+
+// Route 7: Delete product dengan validasi
+app.delete('/api/products/:id', validate(deleteProductValidation), (req: CustomRequest, res: Response) => {
+  const id = parseInt(req.params.id!)
+  const index = products.findIndex(p => p.id === id)
 
   if (index === -1) {
-    return res.status(404).json({ success: false, message: " Menu tidak tersedia" });
+    throw new Error(`Produk dengan ID ${id} tidak ditemukan`)
   }
 
-  const deleted = products.splice(index, 1);
+  const deletedProduct = products.splice(index, 1)[0]
+  const waktuProses = Date.now() - (req.startTime || Date.now())
+  
+  successResponse(res, "Produk berhasil dihapus", deletedProduct, waktuProses)
+})
 
-  res.json({
-    success: true,
-    message: "Menu sudah Dihapus",
-    data: deleted[0]
-  });
-});
+// ===== ROUTE BARU SESUAI TUGAS =====
 
+// Route 8: Error test route (sengaja lempar error)
+app.get('/api/error-test', (_req: CustomRequest, _res: Response) => {
+  throw new Error("Ini adalah error yang sengaja dibuat untuk testing!")
+})
+
+// Route 9: Async test route dengan asyncHandler
+app.get('/api/async-test', asyncHandler(async (req: CustomRequest, res: Response) => {
+  // Simulasi async operation
+  await new Promise(resolve => setTimeout(resolve, 100))
+  
+  // Simulasi error jika ada query param 'fail'
+  if (req.query.fail === 'true') {
+    throw new Error("Async operation sengaja gagal!")
+  }
+  
+  const waktuProses = Date.now() - (req.startTime || Date.now())
+  successResponse(res, "Async test berhasil!", { 
+    message: "Route ini menggunakan asyncHandler",
+    timestamp: new Date().toISOString()
+  }, waktuProses)
+}))
+
+// ===== 404 HANDLER =====
+app.use(/.*/, (req: Request) => {
+  throw new Error(`Route ${req.originalUrl} tidak ditemukan`)
+})
+
+// ===== GLOBAL ERROR HANDLER =====
+app.use((err: Error, req: CustomRequest, res: Response, _next: NextFunction) => {
+  console.error('ERROR:', err.message)
+  
+  const waktuProses = Date.now() - (req.startTime || Date.now())
+  
+  // Tentukan status code berdasarkan pesan error
+  let statusCode = 500
+  if (err.message.includes('tidak ditemukan')) {
+    statusCode = 404
+  } else if (err.message.includes('X-API-Key')) {
+    statusCode = 401
+  } else if (err.message.includes('tidak valid')) {
+    statusCode = 403
+  } else if (err.message.includes('Validasi gagal') || err.message.includes('harus')) {
+    statusCode = 400
+  }
+  
+  // Cek jika error berasal dari validasi
+  let errorData: ValidationError[] | { stack?: string } | null = null
+  let errorMessage = err.message
+  
+  if (err.message.includes('Validasi gagal:')) {
+    try {
+      const errorStr = err.message.replace('Validasi gagal: ', '')
+      const parsedErrors = JSON.parse(errorStr) as ValidationError[]
+      errorData = parsedErrors
+      // Update pesan error menjadi lebih user-friendly
+      errorMessage = 'Validasi input gagal'
+    } catch {
+      // Jika parsing gagal, gunakan pesan asli
+      errorData = null
+    }
+  } else if (process.env.NODE_ENV === 'development' && err.stack) {
+    // Hanya tampilkan stack trace di development
+    errorData = { stack: err.stack }
+  }
+  
+  errorResponse(
+    res,
+    errorMessage, // Gunakan pesan yang sudah diperbaiki
+    statusCode,
+    waktuProses,
+    errorData
+  )
+})
+// ===== START SERVER =====
 app.listen(PORT, () => {
-    console.log(`Server running at ${HOST}:${PORT}`);
+  console.log(`🚀 Server running at ${HOST}:${PORT}`)
+  console.log(`🔑 API Key yang digunakan: secret-api-key-123`)
+  console.log(`📚 Dokumentasi API:`)
+  console.log(`   GET  /                       - Halaman utama`)
+  console.log(`   GET  /api/products           - Get semua produk`)
+  console.log(`   GET  /api/products/:id       - Get produk by ID`)
+  console.log(`   GET  /api/search?name=...    - Cari produk`)
+  console.log(`   POST /api/products           - Tambah produk`)
+  console.log(`   PUT  /api/products/:id       - Update produk`)
+  console.log(`   DELETE /api/products/:id     - Hapus produk`)
+  console.log(`   GET  /api/error-test         - Test error handling`)
+  console.log(`   GET  /api/async-test         - Test async handler`)
+  console.log(`\n⚠️  Jangan lupa gunakan header: X-API-Key: secret-api-key-123`)
 })
