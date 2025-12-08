@@ -1,0 +1,128 @@
+Microsoft Windows [Version 10.0.26200.7309]
+(c) Microsoft Corporation. All rights reserved.
+
+C:\Program Files\PostgreSQL\18\pgAdmin 4\runtime>"C:\Program Files\PostgreSQL\18\pg
+Admin 4\runtime\psql.exe" "host=localhost port=5432 dbname=postgres user=postgres s
+slmode=prefer connect_timeout=10" 2>>&1
+psql (18.1)
+WARNING: Console code page (437) differs from Windows code page (1252)
+         8-bit characters might not work correctly. See psql reference
+         page "Notes for Windows users" for details.
+Type "help" for help.
+
+postgres=# CREATE DATABASE toko_laptop_db;
+CREATE DATABASE
+postgres=# \c toko_laptop_db;
+You are now connected to database "toko_laptop_db" as user "postgres".
+toko_laptop_db=# CREATE TABLE items (
+toko_laptop_db(#     id SERIAL PRIMARY KEY,
+toko_laptop_db(#     name VARCHAR(100) NOT NULL,
+toko_laptop_db(#     category VARCHAR(50) NOT NULL,
+toko_laptop_db(#     price BIGINT NOT NULL,
+toko_laptop_db(#     is_active BOOLEAN DEFAULT TRUE
+toko_laptop_db(# );
+CREATE TABLE
+toko_laptop_db=# INSERT INTO items (name, category, price)
+toko_laptop_db-# VALUES
+toko_laptop_db-# ('MacBook Air M2', 'Laptop', 15000000),
+toko_laptop_db-# ('ASUS ROG Strix G15', 'Laptop', 20000000),
+toko_laptop_db-# ('Samsung Galaxy S23', 'Smartphone', 12000000),
+toko_laptop_db-# ('Sony WH-1000XM5', 'Headphone', 6500000),
+toko_laptop_db-# ('Logitech MX Master 3S', 'Mouse', 1500000);
+INSERT 0 5
+toko_laptop_db=# SELECT * FROM items;
+ id |         name          |  category  |  price   | is_active
+----+-----------------------+------------+----------+-----------
+  1 | MacBook Air M2        | Laptop     | 15000000 | t
+  2 | ASUS ROG Strix G15    | Laptop     | 20000000 | t
+  3 | Samsung Galaxy S23    | Smartphone | 12000000 | t
+  4 | Sony WH-1000XM5       | Headphone  |  6500000 | t
+  5 | Logitech MX Master 3S | Mouse      |  1500000 | t
+(5 rows)
+
+
+toko_laptop_db=#
+toko_laptop_db=#
+toko_laptop_db=#
+toko_laptop_db=#
+toko_laptop_db=#
+toko_laptop_db=#
+toko_laptop_db=#
+toko_laptop_db=#
+toko_laptop_db=#
+toko_laptop_db=#
+toko_laptop_db=#
+toko_laptop_db=#
+toko_laptop_db=# SELECT * FROM items WHERE price > 5000000;
+ id |        name        |  category  |  price   | is_active
+----+--------------------+------------+----------+-----------
+  1 | MacBook Air M2     | Laptop     | 15000000 | t
+  2 | ASUS ROG Strix G15 | Laptop     | 20000000 | t
+  3 | Samsung Galaxy S23 | Smartphone | 12000000 | t
+  4 | Sony WH-1000XM5    | Headphone  |  6500000 | t
+(4 rows)
+
+
+toko_laptop_db=# SELECT * FROM items WHERE category = 'laptop';
+ id | name | category | price | is_active
+----+------+----------+-------+-----------
+(0 rows)
+
+
+toko_laptop_db=# SELECT * FROM items WHERE category = '%Laptop%';
+ id | name | category | price | is_active
+----+------+----------+-------+-----------
+(0 rows)
+
+
+toko_laptop_db=# SELECT * FROM items WHERE category LIKE 'Laptop';
+ id |        name        | category |  price   | is_active
+----+--------------------+----------+----------+-----------
+  1 | MacBook Air M2     | Laptop   | 15000000 | t
+  2 | ASUS ROG Strix G15 | Laptop   | 20000000 | t
+(2 rows)
+
+
+toko_laptop_db=# UPDATE items
+toko_laptop_db-# SET price = 2000000
+toko_laptop_db-# WHERE id = 1;
+UPDATE 1
+toko_laptop_db=# SELECT * FROM items;
+ id |         name          |  category  |  price   | is_active
+----+-----------------------+------------+----------+-----------
+  2 | ASUS ROG Strix G15    | Laptop     | 20000000 | t
+  3 | Samsung Galaxy S23    | Smartphone | 12000000 | t
+  4 | Sony WH-1000XM5       | Headphone  |  6500000 | t
+  5 | Logitech MX Master 3S | Mouse      |  1500000 | t
+  1 | MacBook Air M2        | Laptop     |  2000000 | t
+(5 rows)
+
+
+toko_laptop_db=# DELETE FROM items WHERE id = 1;
+DELETE 1
+toko_laptop_db=# SELECT * FROM items;
+ id |         name          |  category  |  price   | is_active
+----+-----------------------+------------+----------+-----------
+  2 | ASUS ROG Strix G15    | Laptop     | 20000000 | t
+  3 | Samsung Galaxy S23    | Smartphone | 12000000 | t
+  4 | Sony WH-1000XM5       | Headphone  |  6500000 | t
+  5 | Logitech MX Master 3S | Mouse      |  1500000 | t
+(4 rows)
+
+
+toko_laptop_db=# Microsoft Windows [Version 10.0.26200.7309]
+(c) Microsoft Corporation. All rights reserved.
+
+C:\Program Files\PostgreSQL\18\pgAdmin 4\runtime>"
+C:\Program Files\PostgreSQL\18\pgAdmin 4\runtime\p
+sql.exe" "host=localhost port=5432 dbname=postgres
+ user=postgres sslmode=prefer connect_timeout=10"
+2>>&1
+psql (18.1)
+WARNING: Console code page (437) differs from Wind
+ows code page (1252)
+         8-bit characters might not work correctly
+. See psql reference
+         page "Notes for Windows users" for detail
+s.
+Type "help" for help.
