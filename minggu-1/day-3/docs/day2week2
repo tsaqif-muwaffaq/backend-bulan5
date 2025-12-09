@@ -1,0 +1,370 @@
+postgres=# \c toko_laptop_db;
+You are now connected to database "toko_laptop_db" as user "postgres".
+toko_laptop_db=# CREATE TABLE categories (
+toko_laptop_db(#     id SERIAL PRIMARY KEY,
+toko_laptop_db(#     name VARCHAR(100) NOT NULL
+toko_laptop_db(# );
+CREATE TABLE
+toko_laptop_db=# INSERT INTO categories (name) VALUES
+toko_laptop_db-# ('Laptop'),
+toko_laptop_db-# ('Mouse'),
+toko_laptop_db-# ('Keyboard'),
+toko_laptop_db-# ('Smartphone'),
+toko_laptop_db-# ('Headphone');
+INSERT 0 5
+toko_laptop_db=#
+toko_laptop_db=# SELECT * FROM categories;
+ id |    name
+----+------------
+  1 | Laptop
+  2 | Mouse
+  3 | Keyboard
+  4 | Smartphone
+  5 | Headphone
+(5 rows)
+
+
+toko_laptop_db=# ALTER TABLE items
+toko_laptop_db-# ADD COLUMN category_id INT;
+ALTER TABLE
+toko_laptop_db=# ALTER TABLE items
+toko_laptop_db-# ADD CONSTRAINT fk_items_category
+toko_laptop_db-# FOREIGN KEY (category_id)
+toko_laptop_db-# REFERENCES categories(id)
+toko_laptop_db-# ON DELETE SET NULL;
+ALTER TABLE
+toko_laptop_db=# SELECT column_name, data_type
+toko_laptop_db-# FROM information_schema.columns
+toko_laptop_db-# WHERE table_name = 'items';
+ column_name |     data_type
+-------------+-------------------
+ id          | integer
+ name        | character varying
+ category    | character varying
+ price       | bigint
+ is_active   | boolean
+ category_id | integer
+(6 rows)
+
+
+toko_laptop_db=# SELECT * FROM items;
+ id |         name          |  category  |  price   | is_active | category_id
+----+-----------------------+------------+----------+-----------+-------------
+  2 | ASUS ROG Strix G15    | Laptop     | 20000000 | t         |
+  3 | Samsung Galaxy S23    | Smartphone | 12000000 | t         |
+  4 | Sony WH-1000XM5       | Headphone  |  6500000 | t         |
+  5 | Logitech MX Master 3S | Mouse      |  1500000 | t         |
+(4 rows)
+
+
+toko_laptop_db=# UPDATE items
+toko_laptop_db-# SET category_id = 1  -- Laptop
+toko_laptop_db-# WHERE id = 2;  -- ASUS ROG Strix G15
+UPDATE 1
+toko_laptop_db=# UPDATE items
+toko_laptop_db-# SET category_id = 4  -- Smartphone
+toko_laptop_db-# WHERE id = 3;
+UPDATE 1
+toko_laptop_db=# UPDATE items
+toko_laptop_db-# SET category_id = 5  -- Headphone
+toko_laptop_db-# WHERE id = 4;  -- Sony WH-1000XM5
+UPDATE 1
+toko_laptop_db=# UPDATE items
+toko_laptop_db-# SET category_id = 2  -- Mouse
+toko_laptop_db-# WHERE id = 5;  -- Logitech MX Master 3S
+UPDATE 1
+toko_laptop_db=# SELECT id, name, category, category_id
+toko_laptop_db-# FROM items;
+ id |         name          |  category  | category_id
+----+-----------------------+------------+-------------
+  2 | ASUS ROG Strix G15    | Laptop     |           1
+  3 | Samsung Galaxy S23    | Smartphone |           4
+  4 | Sony WH-1000XM5       | Headphone  |           5
+  5 | Logitech MX Master 3S | Mouse      |           2
+(4 rows)
+
+
+toko_laptop_db=# INSERT INTO items (name, category, price, category_id) VALUES
+toko_laptop_db-# ('Dell XPS 13', 'Laptop', 18000000, 1),
+toko_laptop_db-# ('Logitech G Pro X', 'Keyboard', 2500000, 3),
+toko_laptop_db-# ('Razer Viper Mini', 'Mouse', 800000, 2),
+toko_laptop_db-# ('iPhone 15 Pro', 'Smartphone', 22000000, 4);
+INSERT 0 4
+toko_laptop_db=# SELECT * FROM items ORDER BY id;
+ id |         name          |  category  |  price   | is_active | category_id
+----+-----------------------+------------+----------+-----------+-------------
+  2 | ASUS ROG Strix G15    | Laptop     | 20000000 | t         |           1
+  3 | Samsung Galaxy S23    | Smartphone | 12000000 | t         |           4
+  4 | Sony WH-1000XM5       | Headphone  |  6500000 | t         |           5
+  5 | Logitech MX Master 3S | Mouse      |  1500000 | t         |           2
+  6 | Dell XPS 13           | Laptop     | 18000000 | t         |           1
+  7 | Logitech G Pro X      | Keyboard   |  2500000 | t         |           3
+  8 | Razer Viper Mini      | Mouse      |   800000 | t         |           2
+  9 | iPhone 15 Pro         | Smartphone | 22000000 | t         |           4
+(8 rows)
+
+
+toko_laptop_db=# SELECT
+toko_laptop_db-#     i.id,
+toko_laptop_db-#     i.name AS product_name,
+toko_laptop_db-#     i.price,
+toko_laptop_db-#     i.is_active,
+toko_laptop_db-#     c.name AS category_name
+toko_laptop_db-# FROM items i
+toko_laptop_db-# JOIN categories c ON i.category_id = c.id
+toko_laptop_db-# ORDER BY i.id;
+ id |     product_name      |  price   | is_active | category_name
+----+-----------------------+----------+-----------+---------------
+  2 | ASUS ROG Strix G15    | 20000000 | t         | Laptop
+  3 | Samsung Galaxy S23    | 12000000 | t         | Smartphone
+  4 | Sony WH-1000XM5       |  6500000 | t         | Headphone
+  5 | Logitech MX Master 3S |  1500000 | t         | Mouse
+  6 | Dell XPS 13           | 18000000 | t         | Laptop
+  7 | Logitech G Pro X      |  2500000 | t         | Keyboard
+  8 | Razer Viper Mini      |   800000 | t         | Mouse
+  9 | iPhone 15 Pro         | 22000000 | t         | Smartphone
+(8 rows)
+
+
+toko_laptop_db=# SELECT
+toko_laptop_db-#     c.name AS category_name,
+toko_laptop_db-#     COUNT(i.id) AS total_items,
+toko_laptop_db-#     SUM(i.stock) AS total_stock
+toko_laptop_db-# FROM categories c
+toko_laptop_db-# LEFT JOIN items i ON c.id = i.category_id
+toko_laptop_db-# GROUP BY c.id, c.name
+toko_laptop_db-# ORDER BY total_items DESC;
+ERROR:  column i.stock does not exist
+LINE 4:     SUM(i.stock) AS total_stock
+                ^
+toko_laptop_db=# ALTER TABLE items
+toko_laptop_db-# ADD COLUMN stock INT DEFAULT 0;
+ALTER TABLE
+toko_laptop_db=# UPDATE items SET stock = 10 WHERE id = 2;  -- ASUS
+UPDATE 1
+toko_laptop_db=# UPDATE items SET stock = 15 WHERE id = 3;  -- Samsung
+UPDATE 1
+toko_laptop_db=# UPDATE items SET stock = 8 WHERE id = 4;   -- Sony
+UPDATE 1
+toko_laptop_db=# UPDATE items SET stock = 20 WHERE id = 5;  -- Logitech
+UPDATE 1
+toko_laptop_db=# UPDATE items SET stock = 12 WHERE id = 6;  -- Dell
+UPDATE 1
+toko_laptop_db=# UPDATE items SET stock = 25 WHERE id = 7;  -- Logitech Keyboard
+UPDATE 1
+toko_laptop_db=# UPDATE items SET stock = 30 WHERE id = 8;  -- Razer Mouse
+UPDATE 1
+toko_laptop_db=# UPDATE items SET stock = 18 WHERE id = 9;  -- iPhone
+UPDATE 1
+toko_laptop_db=# SELECT
+toko_laptop_db-#     c.name AS category_name,
+toko_laptop_db-#     COUNT(i.id) AS total_items,
+toko_laptop_db-#     SUM(i.stock) AS total_stock
+toko_laptop_db-# FROM categories c
+toko_laptop_db-# LEFT JOIN items i ON c.id = i.category_id
+toko_laptop_db-# GROUP BY c.id, c.name
+toko_laptop_db-# ORDER BY total_items DESC;
+ category_name | total_items | total_stock
+---------------+-------------+-------------
+ Smartphone    |           2 |          33
+ Mouse         |           2 |          50
+ Laptop        |           2 |          22
+ Headphone     |           1 |           8
+ Keyboard      |           1 |          25
+(5 rows)
+
+
+toko_laptop_db=# SELECT
+toko_laptop_db-#     c.name AS category_name,
+toko_laptop_db-#     MAX(i.price) AS highest_price,
+toko_laptop_db-#     MIN(i.price) AS lowest_price,
+toko_laptop_db-#     ROUND(AVG(i.price), 2) AS average_price
+toko_laptop_db-# FROM categories c
+toko_laptop_db-# LEFT JOIN items i ON c.id = i.category_id
+toko_laptop_db-# GROUP BY c.id, c.name
+toko_laptop_db-# ORDER BY highest_price DESC NULLS LAST;
+ category_name | highest_price | lowest_price | average_price
+---------------+---------------+--------------+---------------
+ Smartphone    |      22000000 |     12000000 |   17000000.00
+ Laptop        |      20000000 |     18000000 |   19000000.00
+ Headphone     |       6500000 |      6500000 |    6500000.00
+ Keyboard      |       2500000 |      2500000 |    2500000.00
+ Mouse         |       1500000 |       800000 |    1150000.00
+(5 rows)
+
+
+toko_laptop_db=# SELECT id, name, category_id FROM items WHERE category_id = 1;
+ id |        name        | category_id
+----+--------------------+-------------
+  2 | ASUS ROG Strix G15 |           1
+  6 | Dell XPS 13        |           1
+(2 rows)
+
+
+toko_laptop_db=# DELETE FROM categories WHERE id = 1;
+DELETE 1
+toko_laptop_db=# SELECT id, name, category_id FROM items WHERE category_id IS NULL;
+
+ id |        name        | category_id
+----+--------------------+-------------
+  2 | ASUS ROG Strix G15 |
+  6 | Dell XPS 13        |
+(2 rows)
+
+
+toko_laptop_db=# UPDATE items SET category_id = 1 WHERE name LIKE '%Laptop%';
+UPDATE 0
+toko_laptop_db=# INSERT INTO categories (id, name) VALUES (1, 'Laptop') ON CONFLICT
+ DO NOTHING;
+INSERT 0 1
+toko_laptop_db=# SELECT
+toko_laptop_db-#     c.name AS category_name,
+toko_laptop_db-#     COUNT(i.id) AS product_count
+toko_laptop_db-# FROM categories c
+toko_laptop_db-# LEFT JOIN items i ON c.id = i.category_id
+toko_laptop_db-# GROUP BY c.id, c.name
+toko_laptop_db-# ORDER BY product_count DESC;
+ category_name | product_count
+---------------+---------------
+ Smartphone    |             2
+ Mouse         |             2
+ Headphone     |             1
+ Keyboard      |             1
+ Laptop        |             0
+(5 rows)
+
+
+toko_laptop_db=# SELECT
+toko_laptop_db-#     c.name AS category_name,
+toko_laptop_db-#     COUNT(i.id) AS product_count
+toko_laptop_db-# FROM categories c
+toko_laptop_db-# INNER JOIN items i ON c.id = i.category_id
+toko_laptop_db-# GROUP BY c.id, c.name
+toko_laptop_db-# ORDER BY product_count DESC;
+ category_name | product_count
+---------------+---------------
+ Smartphone    |             2
+ Mouse         |             2
+ Keyboard      |             1
+ Headphone     |             1
+(4 rows)
+
+
+toko_laptop_db=# SELECT
+toko_laptop_db-#     c.name AS category_name,
+toko_laptop_db-#     AVG(i.price) AS avg_price
+toko_laptop_db-# FROM categories c
+toko_laptop_db-# LEFT JOIN items i ON c.id = i.category_id
+toko_laptop_db-# WHERE i.price > 1000000  -- Filter produk mahal dulu
+toko_laptop_db-# GROUP BY c.id, c.name;
+ category_name |       avg_price
+---------------+-----------------------
+ Smartphone    | 17000000.000000000000
+ Mouse         |  1500000.000000000000
+ Keyboard      |  2500000.000000000000
+ Headphone     |  6500000.000000000000
+(4 rows)
+
+
+toko_laptop_db=# SELECT
+toko_laptop_db-#     c.name AS category_name,
+toko_laptop_db-#     AVG(i.price) AS avg_price
+toko_laptop_db-# FROM categories c
+toko_laptop_db-# LEFT JOIN items i ON c.id = i.category_id
+toko_laptop_db-# GROUP BY c.id, c.name
+toko_laptop_db-# HAVING AVG(i.price) > 5000000;  -- Filter kategori dengan rata-rat
+a > 5jt
+ category_name |       avg_price
+---------------+-----------------------
+ Headphone     |  6500000.000000000000
+ Smartphone    | 17000000.000000000000
+(2 rows)
+
+
+toko_laptop_db=# SELECT
+toko_laptop_db-#     i.id,
+toko_laptop_db-#     i.name AS product_name,
+toko_laptop_db-#     i.price,
+toko_laptop_db-#     c.name AS category_name
+toko_laptop_db-# FROM items i
+toko_laptop_db-# JOIN categories c ON i.category_id = c.id
+toko_laptop_db-# ORDER BY i.price DESC
+toko_laptop_db-# LIMIT 3 OFFSET 0;
+ id |    product_name    |  price   | category_name
+----+--------------------+----------+---------------
+  9 | iPhone 15 Pro      | 22000000 | Smartphone
+  3 | Samsung Galaxy S23 | 12000000 | Smartphone
+  4 | Sony WH-1000XM5    |  6500000 | Headphone
+(3 rows)
+
+
+toko_laptop_db=# SELECT
+toko_laptop_db-#     i.id,
+toko_laptop_db-#     i.name AS product_name,
+toko_laptop_db-#     i.price,
+toko_laptop_db-#     c.name AS category_name
+toko_laptop_db-# FROM items i
+toko_laptop_db-# JOIN categories c ON i.category_id = c.id
+toko_laptop_db-# ORDER BY i.price DESC
+toko_laptop_db-# LIMIT 3 OFFSET 3;
+ id |     product_name      |  price  | category_name
+----+-----------------------+---------+---------------
+  7 | Logitech G Pro X      | 2500000 | Keyboard
+  5 | Logitech MX Master 3S | 1500000 | Mouse
+  8 | Razer Viper Mini      |  800000 | Mouse
+(3 rows)
+
+
+toko_laptop_db=# SELECT '✅ Tabel categories dibuat' AS status
+toko_laptop_db-# WHERE EXISTS (SELECT FROM information_schema.tables
+toko_laptop_db(#               WHERE table_name = 'categories');
+          status
+---------------------------
+ ? Tabel categories dibuat
+(1 row)
+
+
+toko_laptop_db=# SELECT '✅ Kolom category_id ditambahkan' AS status
+toko_laptop_db-# WHERE EXISTS (SELECT FROM information_schema.columns
+toko_laptop_db(#               WHERE table_name = 'items'
+toko_laptop_db(#               AND column_name = 'category_id');
+             status
+---------------------------------
+ ? Kolom category_id ditambahkan
+(1 row)
+
+
+toko_laptop_db=# SELECT '✅ Foreign Key constraint aktif' AS status
+toko_laptop_db-# WHERE EXISTS (
+toko_laptop_db(#     SELECT 1
+toko_laptop_db(#     FROM information_schema.table_constraints
+toko_laptop_db(#     WHERE table_name = 'items'
+toko_laptop_db(#     AND constraint_type = 'FOREIGN KEY'
+toko_laptop_db(# );
+             status
+--------------------------------
+ ? Foreign Key constraint aktif
+(1 row)
+
+
+toko_laptop_db=# SELECT
+toko_laptop_db-#     CONCAT('✅ ', COUNT(*), ' items memiliki category_id') AS stat
+us
+toko_laptop_db-# FROM items
+toko_laptop_db-# WHERE category_id IS NOT NULL;
+             status
+--------------------------------
+ ? 6 items memiliki category_id
+(1 row)
+
+
+toko_laptop_db=# SELECT
+toko_laptop_db-#     CONCAT('✅ JOIN berhasil: ', COUNT(*), ' baris data') AS statu
+s
+toko_laptop_db-# FROM items i
+toko_laptop_db-# JOIN categories c ON i.category_id = c.id;
+            status
+-------------------------------
+ ? JOIN berhasil: 6 baris data
+(1 row)
+
