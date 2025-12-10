@@ -22,9 +22,24 @@ export const validate = (rules: ValidationChain[]) => {
 };
 
 export const productCreateValidation = [
-  body("nama").notEmpty().withMessage("Nama wajib diisi").isLength({ min: 3 }).withMessage("Nama minimal 3 karakter"),
-  body("deskripsi").notEmpty().withMessage("Deskripsi wajib diisi"),
-  body("harga").isNumeric().withMessage("Harga harus angka")
+  body('name')
+        .trim()
+        .notEmpty().withMessage('Nama produk wajib diisi')
+        .isLength({ min: 3 }).withMessage('Nama produk minimal 3 karakter'),
+
+    body('description')
+        .trim()
+        .notEmpty().withMessage('Deskripsi wajib diisi'),
+
+    body('price')
+        .isNumeric().withMessage('Harga harus angka')
+        .custom(value => value > 0).withMessage('Harga harus lebih dari 0'),
+
+
+    body('stock')
+        .isNumeric().withMessage('Stock harus angka')
+        .custom(value => value > 0).withMessage('Stock harus lebih dari 0'),
+
 ];
 
 export const productIdValidation = [
