@@ -41,7 +41,8 @@ export const update = async (req: Request, res: Response) => {
   successResponse(res, "Berhasil mengupdate data", product);
 }
 
-export const deleteById = async(req: Request, res: Response) => {
-  const deleted = deleteProduct(req.params.id!);
+export const deleteById = async(req: Request, res: Response) => { 
+  if (!req.params.id) throw new Error("id tidak ditemukan");
+  const deleted = await deleteProduct(req.params.id);
   successResponse(res, "Berhasil menghapus data", deleted);
 }
