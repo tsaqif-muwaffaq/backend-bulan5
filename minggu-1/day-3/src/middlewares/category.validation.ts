@@ -1,4 +1,4 @@
-import { body } from "express-validator";
+import { body, param } from "express-validator";
 
 export const categoryValidation = [
   body("name")
@@ -9,3 +9,10 @@ export const categoryValidation = [
     .matches(/^[a-zA-Z0-9\s]+$/)
     .withMessage("Nama hanya boleh berisi huruf, angka, dan spasi"),
 ];
+
+export const getCategoryByIdValidation = [
+    param('id')
+    .isNumeric()
+    .withMessage('id harus berupa angka')
+    
+]

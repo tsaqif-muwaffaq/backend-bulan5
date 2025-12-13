@@ -1,31 +1,3 @@
-// import { createCategory, getAllCategories } from "../services/category.service"
-// import { successResponse } from "../utils/response"
-// import type { Request, Response } from "express"
-
-// export const getAll = async (_req: Request, res: Response) => {
-//     const categories = await getAllCategories()
-
-//     successResponse(
-//         res, 
-//         "kategori berhasil diambil",
-//         categories,
-//         null,
-//         200
-//     )
-// }
-
-// export const create = async (req: Request, res: Response) => {
-//     const category = await createCategory(req.body.name)
-
-//     successResponse(
-//         res,
-//         "kategori berhasil ditambahkan",
-//         category,
-//         null,
-//         201
-//     )
-// }
-
 import { createCategory, deleteCategory, getAllCategories, getCategoryById, updateCategory } from "../services/category.service"
 import { successResponse } from "../utils/response"
 import type { Request, Response } from "express"
