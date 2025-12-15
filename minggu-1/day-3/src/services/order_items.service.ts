@@ -1,10 +1,10 @@
 import { getPrisma } from "../prisma"
-import type { OrderItem } from "../generated/client";
+import type { OrderItems } from "../generated/client";
 
 const prisma = getPrisma();
 
-export const getAllItems = async(): Promise<OrderItem[]> => {
-    return await prisma.orderItem.findMany({
+export const getAllItems = async(): Promise<OrderItems[]> => {
+    return await prisma.orderItems.findMany({
         include: {
             order: true,
             product: true
@@ -12,8 +12,8 @@ export const getAllItems = async(): Promise<OrderItem[]> => {
     })
 }
 
-export const getItemById = async(id: number): Promise<OrderItem> => {
-    const item = await prisma.orderItem.findUnique({
+export const getItemById = async(id: number): Promise<OrderItems> => {
+    const item = await prisma.orderItems.findUnique({
         where: {
             id
         },
@@ -35,7 +35,7 @@ export const searchItems = async (
     minQty?: number,
     maxQty?: number
 ) => {
-    return await prisma.orderItem.findMany({
+    return await prisma.orderItems.findMany({
         where: {
             ...(orderId !== undefined && { order_id: orderId }),
             ...(productId !== undefined && { product_id: productId }),
@@ -52,11 +52,11 @@ export const searchItems = async (
     });
 };
 
-export const createItem = async(data: { orderId: number, productId: number, quantity: number}): Promise<OrderItem> => {
-    return await prisma.orderItem.create({
+export const createItem = async(data: { orderId: number, productId: number, quantity: number}): Promise<OrderItems> => {
+    return await prisma.orderItems.create({
         data : {
-            order_id: data.orderId,
-            product_id: data.productId,
+            orderId: data.orderId,
+            productId: data.productId,
             quantity: data.quantity
         },
         include: {
@@ -66,8 +66,8 @@ export const createItem = async(data: { orderId: number, productId: number, quan
     })
 }
 
-export const updateItem = async(id: number, data: { orderId: number, productId: number, quantity: number}): Promise<OrderItem> => {
-    const item = await prisma.orderItem.findUnique({
+export const updateItem = async(id: number, data: { orderId: number, productId: number, quantity: number}): Promise<OrderItems> => {
+    const item = await prisma.orderItems.findUnique({
         where: {
             id
         }
@@ -76,13 +76,13 @@ export const updateItem = async(id: number, data: { orderId: number, productId: 
         throw new Error("Order item tidak ditemukan");
     }
 
-    return await prisma.orderItem.update({
+    return await prisma.orderItems.update({
         where: {
             id
         },
         data: {
-            order_id: data.orderId,
-            product_id: data.productId,
+            orderId: data.orderId,
+            productId: data.productId,
             quantity: data.quantity
         },
         include: {
@@ -93,7 +93,7 @@ export const updateItem = async(id: number, data: { orderId: number, productId: 
 }
 
 export const deleteItem = async(id: number): Promise<void> => {
-    const item = await prisma.orderItem.findUnique({
+    const item = await prisma.orderItems.findUnique({
         where: {
             id
         }
@@ -102,7 +102,7 @@ export const deleteItem = async(id: number): Promise<void> => {
         throw new Error("Order item tidak ditemukan");
     }
 
-    await prisma.orderItem.delete({
+    await prisma.orderItems.delete({
         where: {
             id
         }

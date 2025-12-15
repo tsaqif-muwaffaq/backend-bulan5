@@ -1,6 +1,6 @@
-import { PrismaClient } from "./generated/client";
+import { PrismaPg } from "@prisma/adapter-pg";
 import { Pool } from "pg";
-import { PrismaPg } from "../node_modules/@prisma/adapter-pg/dist/index";
+import { PrismaClient } from "./generated/client";
 import config from "./utils/env";
 let prisma;
 export const getPrisma = () => {

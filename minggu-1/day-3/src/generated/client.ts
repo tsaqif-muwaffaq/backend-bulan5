@@ -30,7 +30,7 @@ export * from "./enums"
  * ```
  * const prisma = new PrismaClient()
  * // Fetch zero or more OrderItems
- * const orderItems = await prisma.orderItem.findMany()
+ * const orderItems = await prisma.orderItems.findMany()
  * ```
  * 
  * Read more in our [docs](https://pris.ly/d/client).
@@ -40,10 +40,10 @@ export type PrismaClient<LogOpts extends Prisma.LogLevel = never, OmitOpts exten
 export { Prisma }
 
 /**
- * Model OrderItem
+ * Model OrderItems
  * 
  */
-export type OrderItem = Prisma.OrderItemModel
+export type OrderItems = Prisma.OrderItemsModel
 /**
  * Model Category
  * 
@@ -59,3 +59,8 @@ export type Order = Prisma.OrderModel
  * 
  */
 export type Product = Prisma.ProductModel
+/**
+ * Model User
+ * 
+ */
+export type User = Prisma.UserModel
