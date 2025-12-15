@@ -39,8 +39,11 @@ export const JsonNull = runtime.JsonNull;
  */
 export const AnyNull = runtime.AnyNull;
 export const ModelName = {
+    OrderItems: 'OrderItems',
     Category: 'Category',
-    Product: 'Product'
+    Order: 'Order',
+    Product: 'Product',
+    User: 'User'
 };
 /*
  * Enums
@@ -51,11 +54,28 @@ export const TransactionIsolationLevel = {
     RepeatableRead: 'RepeatableRead',
     Serializable: 'Serializable'
 };
+export const OrderItemsScalarFieldEnum = {
+    id: 'id',
+    orderId: 'orderId',
+    productId: 'productId',
+    quantity: 'quantity',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt',
+    deletedAt: 'deletedAt'
+};
 export const CategoryScalarFieldEnum = {
     id: 'id',
     name: 'name',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
+};
+export const OrderScalarFieldEnum = {
+    id: 'id',
+    userId: 'userId',
+    total: 'total',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt',
+    deletedAt: 'deletedAt'
 };
 export const ProductScalarFieldEnum = {
     id: 'id',
@@ -68,16 +88,22 @@ export const ProductScalarFieldEnum = {
     updatedAt: 'updatedAt',
     deletedAt: 'deletedAt'
 };
+export const UserScalarFieldEnum = {
+    id: 'id',
+    name: 'name',
+    email: 'email',
+    password_hash: 'password_hash'
+};
 export const SortOrder = {
     asc: 'asc',
     desc: 'desc'
 };
-export const QueryMode = {
-    default: 'default',
-    insensitive: 'insensitive'
-};
 export const NullsOrder = {
     first: 'first',
     last: 'last'
+};
+export const QueryMode = {
+    default: 'default',
+    insensitive: 'insensitive'
 };
 //# sourceMappingURL=prismaNamespaceBrowser.js.map

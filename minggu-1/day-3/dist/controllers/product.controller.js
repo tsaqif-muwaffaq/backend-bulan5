@@ -36,7 +36,9 @@ export const update = async (req, res) => {
     successResponse(res, "Berhasil mengupdate data", product);
 };
 export const deleteById = async (req, res) => {
-    const deleted = deleteProduct(req.params.id);
+    if (!req.params.id)
+        throw new Error("id tidak ditemukan");
+    const deleted = await deleteProduct(req.params.id);
     successResponse(res, "Berhasil menghapus data", deleted);
 };
 //# sourceMappingURL=product.controller.js.map

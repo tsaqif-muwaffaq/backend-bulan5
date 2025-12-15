@@ -2,17 +2,20 @@ import { getPrisma } from "../prisma";
 const prisma = getPrisma();
 export const getAllProduct = async () => {
     const products = await prisma.product.findMany({ include: { category: true },
+        where: {
+            deletedAt: null
+        }
     });
-    where: {
-        deletedAt: null;
-    }
     const total = products.length;
     return { products, total };
 };
 export const getByIdProduct = async (id) => {
     const numId = parseInt(id);
     const product = await prisma.product.findUnique({
-        where: { id: numId },
+        where: {
+            id: numId,
+            deletedAt: null
+        },
         include: { category: true },
     });
     if (!product) {
@@ -23,6 +26,7 @@ export const getByIdProduct = async (id) => {
 export const searchProduct = async (name, min_price, max_price) => {
     return await prisma.product.findMany({
         where: {
+            deletedAt: null,
             ...(name && {
                 name: {
                     contains: name,
@@ -34,7 +38,7 @@ export const searchProduct = async (name, min_price, max_price) => {
                 ...(max_price && { lte: max_price }),
             }
         },
-        include: { category: true },
+        include: { category: true }
     });
 };
 export const createProduct = async (data) => {
@@ -52,14 +56,20 @@ export const updateProduct = async (id, data) => {
     await getByIdProduct(id);
     const numId = parseInt(id);
     return await prisma.product.update({
-        where: { id: numId },
+        where: {
+            id: numId,
+            deletedAt: null
+        },
         data
     });
 };
 export const deleteProduct = async (id) => {
     const numId = parseInt(id);
     return await prisma.product.update({
-        where: { id: numId },
+        where: {
+            id: numId,
+            deletedAt: null
+        },
         data: { deletedAt: new Date() }
     });
 };
