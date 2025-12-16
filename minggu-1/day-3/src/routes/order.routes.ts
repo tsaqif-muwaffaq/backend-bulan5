@@ -4,14 +4,15 @@ import { validate } from '../utils/validator';
 import { getOrderByIdValidation } from '../middlewares/orders.validation';
 import { createOrderItemValidation } from '../middlewares/order_items.validation';
 import { checkout } from '../controllers/orders.controller';
+import { authenticate } from '../middlewares/auth.middelware';
 
 
 const router = Router();
 
-router.post('/checkout', checkout)
+router.post('/checkout', authenticate, checkout)
 router.get('/', order.getAll)
-router.get('/:id', validate(getOrderByIdValidation), order.getById);
-router.get('/search', order.search);
+router.get('/:id', validate(getOrderByIdValidation), order.getById)
+router.get('/search', order.search)
 router.post('/', validate(createOrderItemValidation), order.create)
 router.put('/:id', order.update);
 router.delete('/:id', order.remove );

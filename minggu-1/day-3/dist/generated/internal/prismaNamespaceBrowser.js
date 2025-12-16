@@ -92,7 +92,8 @@ export const UserScalarFieldEnum = {
     id: 'id',
     name: 'name',
     email: 'email',
-    password_hash: 'password_hash'
+    password_hash: 'password_hash',
+    role: 'role'
 };
 export const SortOrder = {
     asc: 'asc',
