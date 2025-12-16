@@ -167,8 +167,7 @@ export const deleteOrder = async (id: number): Promise<Order> => {
 }
 
 export interface CreateOrder {
-    userId: number
-    total: number
+    
     orderItems: OrderItems[]
 }
 
@@ -177,7 +176,7 @@ export interface OrderItems {
     quantity: number
 }
 
-export const checkoutOrder = async (data: CreateOrder) => {
+export const checkoutOrder = async (data: CreateOrder, userId: number) => {
     return await prisma.$transaction(async (tx) => {
         let total = 0
         const orderItemsData = []
@@ -221,7 +220,7 @@ export const checkoutOrder = async (data: CreateOrder) => {
         // 6. Create order + orderItems (nested write)
         const newOrder = await tx.order.create({
             data: {
-                userId: data.userId,
+                userId: userId,
                 total,
                 orderItems: {
                     create: orderItemsData

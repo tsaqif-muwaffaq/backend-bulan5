@@ -83,6 +83,7 @@ export declare const UserScalarFieldEnum: {
     readonly name: "name";
     readonly email: "email";
     readonly password_hash: "password_hash";
+    readonly role: "role";
 };
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum];
 export declare const SortOrder: {

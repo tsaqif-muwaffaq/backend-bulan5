@@ -96,7 +96,7 @@ export const remove = async (req: Request, res: Response) => {
    CHECKOUT
 ======================= */
 export const checkout = async (req: Request, res: Response) => {
-    const result = await orderService.checkoutOrder(req.body)
+    const result = await orderService.checkoutOrder(req.body, req.user!.id)
     successResponse(
         res,
         "Order berasil dibuat",
