@@ -9,6 +9,8 @@ update
 } from "../controllers/product.controller";
 import { createProductValidation, getProductsByIdValidation } from "../middlewares/product.validation";
 import { validate } from "../utils/validator";
+import { authenticate } from "../middlewares/auth.middleware";
+import { upload } from "../middlewares/upload.middleware";
 
 const router = Router();
 
@@ -21,7 +23,7 @@ router.get("/:id", validate(getProductsByIdValidation),getById );
 router.get("/search", search);
 
 // CREATE PRODUK + VALIDASI
-router.post("/", validate(createProductValidation),create );
+router.post("/", authenticate, upload.single('image'), validate(createProductValidation),create );
 
 // UPDATE PRODUK
 router.put("/:id", validate(getProductsByIdValidation),update);

@@ -4,7 +4,7 @@ import { validate } from '../utils/validator';
 import { getOrderByIdValidation } from '../middlewares/orders.validation';
 import { createOrderItemValidation } from '../middlewares/order_items.validation';
 import { checkout } from '../controllers/orders.controller';
-import { authenticate } from '../middlewares/auth.middelware';
+import { authenticate } from '../middlewares/auth.middleware';
 const router = Router();
 router.post('/checkout', authenticate, checkout);
 router.get('/', order.getAll);

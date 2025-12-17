@@ -49,6 +49,7 @@ export const createProduct = async (data) => {
             price: data.price,
             stock: data.stock,
             categoryId: data.categoryId ?? null,
+            image: data.image
         }
     });
 };

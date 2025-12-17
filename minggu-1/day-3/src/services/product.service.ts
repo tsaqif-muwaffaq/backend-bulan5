@@ -52,7 +52,7 @@ export const searchProduct = async (name?: string, min_price?: number, max_price
     })
 }
 
-export const createProduct = async(data: {name: string, description?: string, price: number, stock: number, 
+export const createProduct = async(data: {name: string, description?: string, price: number, stock: number, image: string,
   categoryId?: number}): Promise<Product> => {
     return await prisma.product.create({
       data: {
@@ -61,6 +61,7 @@ export const createProduct = async(data: {name: string, description?: string, pr
         price: data.price,
         stock: data.stock,
         categoryId: data.categoryId ?? null,
+        image: data.image 
       }
     })
 }
