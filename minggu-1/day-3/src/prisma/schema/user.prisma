@@ -6,6 +6,7 @@ model User {
     role          String @default("USER")
 
     orders Order[]
+    profile       Profile?
 
     deletedAt DateTime?
     createdAt DateTime @default(now())

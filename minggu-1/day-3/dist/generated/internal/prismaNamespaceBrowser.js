@@ -83,6 +83,7 @@ export const ProductScalarFieldEnum = {
     description: 'description',
     price: 'price',
     stock: 'stock',
+    image: 'image',
     categoryId: 'categoryId',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
@@ -93,7 +94,10 @@ export const UserScalarFieldEnum = {
     name: 'name',
     email: 'email',
     password_hash: 'password_hash',
-    role: 'role'
+    role: 'role',
+    deletedAt: 'deletedAt',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
 };
 export const SortOrder = {
     asc: 'asc',

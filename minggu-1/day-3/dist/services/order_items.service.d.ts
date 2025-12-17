@@ -8,6 +8,7 @@ export declare const searchItems: (orderId?: number, productId?: number, minQty?
         description: string | null;
         price: import("@prisma/client-runtime-utils").Decimal;
         stock: number;
+        image: string;
         categoryId: number | null;
         createdAt: Date;
         updatedAt: Date;

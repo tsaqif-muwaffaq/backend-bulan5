@@ -10,6 +10,7 @@ import categoryRouter from './routes/category.route';
 import orderRouter from './routes/order.routes';
 import orderItemRouter from './routes/order_items.routes';
 import authRouter from './routes/auth.route';
+import profileRouter from './routes/profile.route'
 
 const app: Application = express();
 
@@ -17,6 +18,7 @@ app.use(helmet());
 app.use(cors());
 app.use(morgan("dev"));
 app.use(express.json());
+
 
 app.use((req: Request, _res: Response, next: NextFunction) => {
   req.startTime = Date.now();
@@ -52,6 +54,9 @@ app.use('/api/categories', categoryRouter)
 app.use('/api/orders', orderRouter)
 app.use('/api/order-items', orderItemRouter)
 app.use('/api/auth', authRouter)
+app.use(express.static('public'));
+app.use('/api/profile', profileRouter)
+
 
 
 // 404 fallback

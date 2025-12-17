@@ -72,7 +72,7 @@ export const remove = async (req, res) => {
    CHECKOUT
 ======================= */
 export const checkout = async (req, res) => {
-    const result = await orderService.checkoutOrder(req.body);
+    const result = await orderService.checkoutOrder(req.body, req.user.id);
     successResponse(res, "Order berasil dibuat", result, null, 201);
 };
 //# sourceMappingURL=orders.controller.js.map

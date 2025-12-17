@@ -19,6 +19,10 @@ export const search = async (req, res) => {
     });
 };
 export const create = async (req, res) => {
+    const file = req.file;
+    if (!file)
+        throw new Error("file tidak ditemukan");
+    const imageUrl = `/public/uploads/${file.filename}`;
     const { name, description, price, stock, categoryId } = req.body;
     const data = {
         name: String(name),
@@ -27,6 +31,7 @@ export const create = async (req, res) => {
         stock: Number(stock),
         categoryId: Number(categoryId),
         ...(description && { description: description }),
+        image: imageUrl,
     };
     const products = await createProduct(data);
     successResponse(res, "Berhasil menambahkan data", products);
