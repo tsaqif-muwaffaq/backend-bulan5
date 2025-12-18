@@ -56,7 +56,7 @@ export const create = async (req: Request, res: Response) => {
   }
 
   const data = await orderService.createOrder(userId, items);
-  successResponse(res, "Order created successfully", data, 201);
+  successResponse(res, "Order created successfully", data);
 };
 
 /* =======================

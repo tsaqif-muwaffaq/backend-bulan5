@@ -2,11 +2,44 @@ import type { Request, Response } from "express";
 import { createProduct, deleteProduct, getAllProduct, getByIdProduct, searchProduct, updateProduct } from "../services/product.service";
 import { successResponse } from "../utils/response";
 
-export const getAll = async (_req: Request, res: Response) => {
-    const { products, total } = await getAllProduct()
-    successResponse(res, "Berhasil mengambil data", {jumlah: total, data: products, })
-}
+export const getAll = async (req: Request, res: Response) => {
+  const page = Number(req.query.page) || 1
+  const limit = Number(req.query.limit) || 10
+  const sortBy = req.query.sortBy as string
+  const sortOrder = (req.query.sortOrder as 'asc' | 'desc') || 'desc'
 
+  const search: any = {
+    name: req.query.name as string,
+    min_price: req.query.min_price
+      ? Number(req.query.min_price)
+      : undefined,
+    max_price: req.query.max_price
+      ? Number(req.query.max_price)
+      : undefined,
+  }
+
+  const result = await getAllProduct({
+    page,
+    limit,
+    search,
+    sortBy,
+    sortOrder,
+  })
+
+  const pagination = {
+    page: result.currentPage,
+    limit,
+    total: result.total,
+    totalPages: result.totalPages,
+  }
+
+  successResponse(
+    res,
+    "Berhasil mengambil data",
+    result.products,
+    pagination
+  )
+}
 export const getById = async (req: Request, res: Response) => {
     if (!req.params.id) throw new Error("id tidak ditemukan");
     const product = await getByIdProduct(req.params.id);
@@ -24,11 +57,11 @@ export const search = async (req: Request, res: Response) => {
 
 export const create = async (req: Request, res: Response) => {
   const file = req.file
-  if (!file) throw new Error("file tidak ditemukan");
+  if (!file) throw new Error ("image is required")
+  const { name, description, price, stock, categoryId } = req.body
 
   const imageUrl = `/public/uploads/${file.filename}`
 
-  const { name, description, price, stock, categoryId } = req.body;
   const data = {
     name: String(name),
     description: String(description),
@@ -36,8 +69,7 @@ export const create = async (req: Request, res: Response) => {
     stock: Number(stock),
     categoryId: Number(categoryId),
     ...(description && { description: description }),
-    image: imageUrl,
-
+    image: imageUrl
   }
   const products =await createProduct(data)
   successResponse(res, "Berhasil menambahkan data", products);
