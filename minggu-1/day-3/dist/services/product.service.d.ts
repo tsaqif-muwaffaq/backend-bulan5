@@ -1,8 +1,22 @@
 import type { Product } from "../generated/client";
-export declare const getAllProduct: () => Promise<{
+interface FindAllParams {
+    page: number;
+    limit: number;
+    search?: {
+        name?: string;
+        min_price?: number;
+        max_price?: number;
+    };
+    sortBy?: string;
+    sortOrder?: 'asc' | 'desc';
+}
+interface productListResponse {
     products: Product[];
     total: number;
-}>;
+    totalPages: number;
+    currentPage: number;
+}
+export declare const getAllProduct: (params: FindAllParams) => Promise<productListResponse>;
 export declare const getByIdProduct: (id: string) => Promise<{
     category: {
         name: string;
@@ -33,4 +47,5 @@ export declare const createProduct: (data: {
 }) => Promise<Product>;
 export declare const updateProduct: (id: string, data: Partial<Product>) => Promise<Product>;
 export declare const deleteProduct: (id: string) => Promise<Product>;
+export {};
 //# sourceMappingURL=product.service.d.ts.map

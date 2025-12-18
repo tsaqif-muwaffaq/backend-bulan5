@@ -30,6 +30,7 @@ export declare const ModelName: {
     readonly Category: "Category";
     readonly Order: "Order";
     readonly Product: "Product";
+    readonly Profile: "Profile";
     readonly User: "User";
 };
 export type ModelName = (typeof ModelName)[keyof typeof ModelName];
@@ -79,6 +80,17 @@ export declare const ProductScalarFieldEnum: {
     readonly deletedAt: "deletedAt";
 };
 export type ProductScalarFieldEnum = (typeof ProductScalarFieldEnum)[keyof typeof ProductScalarFieldEnum];
+export declare const ProfileScalarFieldEnum: {
+    readonly id: "id";
+    readonly name: "name";
+    readonly gender: "gender";
+    readonly address: "address";
+    readonly profile_picture_url: "profile_picture_url";
+    readonly userId: "userId";
+    readonly createdAt: "createdAt";
+    readonly updatedAt: "updatedAt";
+};
+export type ProfileScalarFieldEnum = (typeof ProfileScalarFieldEnum)[keyof typeof ProfileScalarFieldEnum];
 export declare const UserScalarFieldEnum: {
     readonly id: "id";
     readonly name: "name";

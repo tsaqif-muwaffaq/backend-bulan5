@@ -14,57 +14,80 @@ import profileRouter from './routes/profile.route'
 
 const app: Application = express();
 
+/* =====================
+ * GLOBAL MIDDLEWARE
+ * ===================== */
 app.use(helmet());
 app.use(cors());
-app.use(morgan("dev"));
+app.use(morgan('dev'));
 app.use(express.json());
+app.set("querryparser", "extended");
+app.use(express.static('public'));
 
 
+/* =====================
+ * REQUEST TIMER
+ * ===================== */
 app.use((req: Request, _res: Response, next: NextFunction) => {
-  req.startTime = Date.now();
+  (req as any).startTime = Date.now();
   next();
 });
 
+/* =====================
+ * API KEY MIDDLEWARE
+ * ===================== */
 app.use((req: Request, res: Response, next: NextFunction) => {
-  const apiKey = req.headers["x-api-key"];
+  const apiKey = req.headers['x-api-key'];
 
   if (!apiKey) {
-    return errorResponse(res, "Header X-API-Key wajib diisi!", 401);
+    return errorResponse(res, 'Header X-API-Key wajib diisi!', 401);
   }
 
-  if (apiKey !== "secret-api-key-123") {
-    return errorResponse(res, "API Key tidak valid!", 403);
+  if (apiKey !== 'secret-api-key-123') {
+    return errorResponse(res, 'API Key tidak valid!', 403);
   }
 
   next();
 });
 
-app.get("/", (req: Request, res: Response) => {
+/* =====================
+ * ROOT ROUTE
+ * ===================== */
+app.get('/', (req: Request, res: Response) => {
   const time = Date.now() - (req as any).startTime;
-  successResponse(res, "API Produk aktif!", { waktuProses: `${time}ms` });
+
+  successResponse(res, 'API Produk aktif!', {
+    waktuProses: `${time}ms`,
+  });
 });
 
-// ROUTE TEST ERROR
-app.get("/api/error-test", () => {
-  throw new Error("Ini error test!");
+/* =====================
+ * ROUTE TEST ERROR
+ * ===================== */
+app.get('/api/error-test', () => {
+  throw new Error('Ini error test!');
 });
 
-app.use('/api/products', productRouter)
-app.use('/api/categories', categoryRouter)
-app.use('/api/orders', orderRouter)
-app.use('/api/order-items', orderItemRouter)
-app.use('/api/auth', authRouter)
-app.use(express.static('public'));
-app.use('/api/profile', profileRouter)
+/* =====================
+ * API ROUTES
+ * ===================== */
+app.use('/api/products', productRouter);
+app.use('/api/categories', categoryRouter);
+app.use('/api/orders', orderRouter);
+app.use('/api/order-items', orderItemRouter);
+app.use('/api/auth', authRouter);
+app.use('/api/profile', profileRouter);
 
-
-
-// 404 fallback
+/* =====================
+ * 404 FALLBACK
+ * ===================== */
 app.use((req: Request) => {
   throw new Error(`Route ${req.originalUrl} tidak ditemukan!`);
 });
 
-// GLOBAL ERROR HANDLER
+/* =====================
+ * GLOBAL ERROR HANDLER
+ * ===================== */
 app.use(errorHandler);
 
 export default app;

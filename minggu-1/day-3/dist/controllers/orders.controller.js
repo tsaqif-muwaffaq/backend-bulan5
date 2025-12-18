@@ -40,7 +40,7 @@ export const create = async (req, res) => {
         throw new Error("Items tidak boleh kosong");
     }
     const data = await orderService.createOrder(userId, items);
-    successResponse(res, "Order created successfully", data, 201);
+    successResponse(res, "Order created successfully", data);
 };
 /* =======================
    UPDATE ORDER

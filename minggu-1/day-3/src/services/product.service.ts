@@ -3,20 +3,69 @@ import { getPrisma } from "../prisma";
 
 const prisma = getPrisma()
 
-export const getAllProduct = async (): Promise<{ products: Product[], total: number }> => {
-    const products = await prisma.product.findMany
-    ({include: { category: true }, 
-    where: {
-      deletedAt: null
-    }
-    
-    
-    })
-    const total = products.length
-
-    return {  products, total}
+interface FindAllParams {
+  page: number;
+  limit: number;
+  search?: {
+    name?: string;
+    min_price?: number;
+    max_price?: number;
+  }
+  sortBy?: string;
+  sortOrder?: 'asc' | 'desc';
 }
 
+interface productListResponse {
+  products: Product[];
+  total: number;
+  totalPages: number;
+  currentPage: number;
+}
+
+export const getAllProduct = async (
+  params: FindAllParams
+): Promise<productListResponse> => {
+  const { page, limit, search, sortBy, sortOrder } = params
+  const skip = (page - 1) * limit
+
+  const whereClause: any = {
+    deletedAt: null,
+  }
+
+  if (search?.name) {
+    whereClause.name = {
+      contains: search.name,
+      mode: 'insensitive',
+    }
+  }
+
+  if (search?.min_price || search?.max_price) {
+    whereClause.price = {}
+    if (search.min_price) whereClause.price.gte = search.min_price
+    if (search.max_price) whereClause.price.lte = search.max_price
+  }
+
+  const products = await prisma.product.findMany({
+    skip,
+    take: limit,
+    where: whereClause,
+    orderBy: sortBy
+      ? { [sortBy]: sortOrder }
+      : { createdAt: 'desc' },
+    include: { category: true },
+  })
+
+  const total = await prisma.product.count({
+    where: whereClause,
+  })
+
+  return {
+    products,
+    total,
+    totalPages: Math.ceil(total / limit),
+    currentPage: page,
+  }
+}
 export const getByIdProduct = async (id: string) => {
   const numId = parseInt(id);
   const product = await prisma.product.findUnique({
